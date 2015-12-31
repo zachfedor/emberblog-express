@@ -24,25 +24,20 @@ app.get('/', function(req, res) {
 app.get('/posts', function(req, res) {
 	db.query("SELECT * from posts")
 	.then(function(results) {
-		var data = [];
-
-		for(var i = 0; i < results.length; i++) {
-			var result = {
+		var data = results.map(function(result) {
+			return {
 				type: 'posts',
-				id: results[i].id,
-				attributes: results[i],
+				id: result.id,
+				attributes: result,
 				relationships: {
 					comments: {
 						links: {
-							related: apiRoot + "/posts/" + results[i].id + "/comments"
+							related: apiRoot + "/posts/" + result.id + "/comments"
 						}
 					}
 				}
 			};
-			// TODO: add the relationships link to comments
-
-			data.push(result);
-		}
+		});
 
 		res.send({ data });
 	})
@@ -104,24 +99,20 @@ app.get('/posts/:id', function(req, res) {
 app.get('/posts/:id/comments', function(req, res) {
 	db.query('SELECT * from comments where post_id=$1', req.params.id)
 	.then(function(results) {
-		var data = [];
-
-		for(var i = 0; i < results.length; i++) {
-			var result = {
+		var data = results.map(function(result) {
+			return {
 				type: 'comments',
-				id: results[i].id,
-				attributes: results[i],
+				id: result.id,
+				attributes: result,
 				relationships: {
 					posts: {
 						links: {
-							related: apiRoot + "/posts/" + results[i].post_id
+							related: apiRoot + "/posts/" + result.post_id
 						}
 					}
 				}
 			};
-
-			data.push(result);
-		}
+		});
 
 		res.send({ data });
 	})
@@ -133,24 +124,20 @@ app.get('/posts/:id/comments', function(req, res) {
 app.get('/comments', function(req, res) {
 	db.query("SELECT * from comments")
 	.then(function(results) {
-		var data = [];
-
-		for(var i = 0; i < results.length; i++) {
-			var result = {
+		var data = results.map(function(result) {
+			return {
 				type: 'comments',
-				id: results[i].id,
-				attributes: results[i],
+				id: result.id,
+				attributes: result,
 				relationships: {
 					posts: {
 						links: {
-							related: apiRoot + "/posts/" + results[i].post_id
+							related: apiRoot + "/posts/" + result.post_id
 						}
 					}
 				}
 			};
-
-			data.push(result);
-		}
+		});
 
 		res.send({ data });
 	})
